@@ -4,76 +4,113 @@ import "maps"
 
 /*
 	Primary methods.
-	All other methods can be derived from these fucntions
+	All other set operations can be derived from these methods.
 */
 
-// Add inserts the given element in the set if not present
+// Add inserts item into the set.
 func (s set[T]) Add(item T) {
 	s[item] = struct{}{}
 }
 
-// Remove deletes the item from the set if exists. It returns nothing
+// Remove deletes item from the set if it exists.
 func (s set[T]) Remove(item T) {
 	delete(s, item)
 }
 
-// Contains returns true if the given item is present in the set, else returns false
+// Contains reports whether item is present in the set.
 func (s set[T]) Contains(item T) bool {
 	_, exists := s[item]
 	return exists
 }
 
-// Size returns the total count of elements in the set
+// Size returns the number of elements in the set.
 func (s set[T]) Size() int {
 	return len(s)
 }
 
 /*
-	There are mathematical operations that can be performed in a set.
+	Mathematical set operations.
 */
 
-// Union returns a new set with elements of both the sets
+// Union returns a new set containing all elements present in either s or rhs.
+// Neither s nor rhs is modified.
 func (s set[T]) Union(rhs set[T]) set[T] {
-	tempset := maps.Clone(s)
+	tempSet := maps.Clone(s)
 	for k := range rhs {
-		tempset.Add(k)
+		tempSet.Add(k)
 	}
-	return tempset
+	return tempSet
 }
 
-// UnionUpdate performs and stored the result on the exitsing set without returning a new set
+// UnionUpdate modifies s to contain all elements present in either s or rhs.
 func (s set[T]) UnionUpdate(rhs set[T]) {
 	for k := range rhs {
 		s.Add(k)
 	}
 }
 
-// Intersection returns a new set with those common elements of both sets
-// If no common elements are found, empty set is returned.
+// Intersection returns a new set containing only the elements present in both s and rhs.
+// Neither s nor rhs is modified.
 func (s set[T]) Intersection(rhs set[T]) set[T] {
-	tempset := make(set[T])
-	minset := make(set[T])
-	if len(s) > len(rhs) {
-		minset = rhs
-	} else {
-		minset = s
+	tempSet := make(set[T])
+
+	minSet := s
+	if len(rhs) < len(s) {
+		minSet = rhs
 	}
 
-	for k := range maps.Keys(minset) {
-		if s.Contains(k) == rhs.Contains(k) {
-			tempset[k] = struct{}{}
+	for k := range minSet {
+		if s.Contains(k) && rhs.Contains(k) {
+			tempSet[k] = struct{}{}
 		}
 	}
 
-	return tempset
+	return tempSet
 }
 
+// IntersectionUpdate modifies s to contain only the elements that are also present in rhs.
 func (s set[T]) IntersectionUpdate(rhs set[T]) {
-	for k := range maps.Keys(s) {
-		if s.Contains(k) == rhs.Contains(k) {
-			s[k] = struct{}{}
-		}else{
+	for k := range s {
+		if !rhs.Contains(k) {
 			delete(s, k)
+		}
+	}
+}
+
+// Diff returns a new set containing the elements present in s but not in rhs.
+// Neither s nor rhs is modified.
+func (s set[T]) Diff(rhs set[T]) set[T] {
+	tempSet := maps.Clone(s)
+
+	for k := range rhs {
+		tempSet.Remove(k)
+	}
+
+	return tempSet
+}
+
+// DiffUpdate modifies s by removing all elements that are also present in rhs.
+func (s set[T]) DiffUpdate(rhs set[T]) {
+	for k := range rhs {
+		s.Remove(k)
+	}
+}
+
+// SymmetricDiff returns a new set containing the elements present in either of the sets,
+// but not in both
+func (s set[T]) SymmetricDiff(rhs set[T]) set[T] {
+	intersection := s.Intersection(rhs)
+	return s.Diff(intersection).Union(rhs.Diff(intersection))
+}
+
+// SymmetricDiffUpdate modifies s to contain the elements present in either s or rhs,
+// but not in both.
+func (s set[T]) SymmetricDiffUpdate(rhs set[T]) {
+	for k := range rhs {
+		if s.Contains(k) {
+			s.Remove(k)
+		} else {
+			s.Add(k)
 		}
 	}
 }

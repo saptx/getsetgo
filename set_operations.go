@@ -1,5 +1,7 @@
 package set
 
+import "maps"
+
 /*
 	Primary methods.
 	All other methods can be derived from these fucntions
@@ -24,4 +26,23 @@ func (s set[T]) Contains(item T) bool {
 // Size returns the total count of elements in the set
 func (s set[T]) Size() int {
 	return len(s)
+}
+
+/*
+	There are mathematical operations that can be performed in a Set.
+*/
+
+// Union returns a new set with elements of both the sets
+func (s set[T]) Union(rhs set[T]) set[T] {
+	tempSet := maps.Clone(s)
+	for k := range rhs {
+		tempSet.Add(k)
+	}
+	return tempSet
+}
+
+func (s set[T]) UnionUpdate(rhs set[T]) {
+	for k := range rhs {
+		s.Add(k)
+	}
 }

@@ -29,20 +29,51 @@ func (s set[T]) Size() int {
 }
 
 /*
-	There are mathematical operations that can be performed in a Set.
+	There are mathematical operations that can be performed in a set.
 */
 
 // Union returns a new set with elements of both the sets
 func (s set[T]) Union(rhs set[T]) set[T] {
-	tempSet := maps.Clone(s)
+	tempset := maps.Clone(s)
 	for k := range rhs {
-		tempSet.Add(k)
+		tempset.Add(k)
 	}
-	return tempSet
+	return tempset
 }
 
+// UnionUpdate performs and stored the result on the exitsing set without returning a new set
 func (s set[T]) UnionUpdate(rhs set[T]) {
 	for k := range rhs {
 		s.Add(k)
+	}
+}
+
+// Intersection returns a new set with those common elements of both sets
+// If no common elements are found, empty set is returned.
+func (s set[T]) Intersection(rhs set[T]) set[T] {
+	tempset := make(set[T])
+	minset := make(set[T])
+	if len(s) > len(rhs) {
+		minset = rhs
+	} else {
+		minset = s
+	}
+
+	for k := range maps.Keys(minset) {
+		if s.Contains(k) == rhs.Contains(k) {
+			tempset[k] = struct{}{}
+		}
+	}
+
+	return tempset
+}
+
+func (s set[T]) IntersectionUpdate(rhs set[T]) {
+	for k := range maps.Keys(s) {
+		if s.Contains(k) == rhs.Contains(k) {
+			s[k] = struct{}{}
+		}else{
+			delete(s, k)
+		}
 	}
 }

@@ -16,7 +16,10 @@ func (s set[T]) Equals(rhs set[T]) bool {
 	return maps.Equal(s, rhs)
 }
 
-// IsSubset return true if s1 is a subset of s2, else returns false
+// IsSubset returns true if s1 is a subset of s2, else returns false.
+// 
+// A set s1 is a subset of s2 if every element of s1 is also an element of s2.
+// For example, if A = {1, 2, 3} and B = {2, 3}, then B is a subset of A.
 func IsSubset[T comparable](s1, s2 set[T]) bool {
 	for k := range s1 {
 		if !s2.Contains(k) {
@@ -24,4 +27,12 @@ func IsSubset[T comparable](s1, s2 set[T]) bool {
 		}
 	}
 	return true
+}
+
+// IsSuperset returns true if s1 is a superset of s2, else returns false.
+//
+// A set s1 is a superset of s2 if every element of s2 is also an element of s1.
+// For example, if A = {1, 2, 3} and B = {2, 3}, then A is a superset of B.
+func IsSuperset[T comparable](s1, s2 set[T]) bool {
+	return IsSubset(s2, s1)
 }

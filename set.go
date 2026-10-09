@@ -77,6 +77,13 @@ func (s set[T]) Union(rhs set[T]) set[T] {
 	return tempSet
 }
 
+// UnionUpdate modifies s to contain all elements present in either s or rhs.
+func (s set[T]) UnionUpdate(rhs set[T]) {
+	for k := range rhs {
+		s.Add(k)
+	}
+}
+
 // Intersection returns a new set containing only the elements present in both s and rhs.
 // Neither s nor rhs is modified.
 func (s set[T]) Intersection(rhs set[T]) set[T] {
@@ -97,6 +104,15 @@ func (s set[T]) Intersection(rhs set[T]) set[T] {
 	return tempSet
 }
 
+// IntersectionUpdate modifies s to contain only the elements that are also present in rhs.
+func (s set[T]) IntersectionUpdate(rhs set[T]) {
+	for k := range s {
+		if _, exists := s[k]; !exists {
+			delete(s, k)
+		}
+	}
+}
+
 // Diff returns a new set containing the elements present in s but not in rhs.
 // Neither s nor rhs is modified.
 func (s set[T]) Diff(rhs set[T]) set[T] {
@@ -109,10 +125,29 @@ func (s set[T]) Diff(rhs set[T]) set[T] {
 	return tempSet
 }
 
+// DiffUpdate modifies s by removing all elements that are also present in rhs.
+func (s set[T]) DiffUpdate(rhs set[T]) {
+	for k := range rhs {
+		s.Remove(k)
+	}
+}
+
 // SymmetricDiff returns a new set containing the elements present in either of the sets,
 // but not in both.
 // Neither s nor rhs is modified.
 func (s set[T]) SymmetricDiff(rhs set[T]) set[T] {
 	intersection := s.Intersection(rhs)
 	return s.Diff(intersection).Union(rhs.Diff(intersection))
+}
+
+// SymmetricDiffUpdate modifies s to contain the elements present in either s or rhs,
+// but not in both.
+func (s set[T]) SymmetricDiffUpdate(rhs set[T]) {
+	for k := range rhs {
+		if s.Contains(k) {
+			s.Remove(k)
+		} else {
+			s.Add(k)
+		}
+	}
 }

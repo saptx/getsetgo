@@ -2,6 +2,7 @@ package set
 
 import (
 	"fmt"
+	"maps"
 	"strings"
 )
 
@@ -61,3 +62,57 @@ func (s set[T]) Size() int {
 	return len(s)
 }
 
+
+/*
+	Methods to perform Mathematical set operations.
+*/
+
+// Union returns a new set containing all elements present in either s or rhs.
+// Neither s nor rhs is modified.
+func (s set[T]) Union(rhs set[T]) set[T] {
+	tempSet := maps.Clone(s)
+	for k := range rhs {
+		tempSet.Add(k)
+	}
+	return tempSet
+}
+
+// Intersection returns a new set containing only the elements present in both s and rhs.
+// Neither s nor rhs is modified.
+func (s set[T]) Intersection(rhs set[T]) set[T] {
+	tempSet := make(set[T])
+
+	minSet := s
+	if len(rhs) < len(s) {
+		minSet = rhs
+	}
+	
+	// set haeving least elements is used for iteration
+	for k := range minSet {
+		if s.Contains(k) && rhs.Contains(k) {
+			tempSet[k] = struct{}{}
+		}
+	}
+
+	return tempSet
+}
+
+// Diff returns a new set containing the elements present in s but not in rhs.
+// Neither s nor rhs is modified.
+func (s set[T]) Diff(rhs set[T]) set[T] {
+	tempSet := maps.Clone(s)
+
+	for k := range rhs {
+		tempSet.Remove(k)
+	}
+
+	return tempSet
+}
+
+// SymmetricDiff returns a new set containing the elements present in either of the sets,
+// but not in both.
+// Neither s nor rhs is modified.
+func (s set[T]) SymmetricDiff(rhs set[T]) set[T] {
+	intersection := s.Intersection(rhs)
+	return s.Diff(intersection).Union(rhs.Diff(intersection))
+}

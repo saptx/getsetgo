@@ -1,5 +1,10 @@
 package set
 
+import (
+	"cmp"
+	"slices"
+)
+
 // todo:
 // add Clone(), Sort()
 
@@ -14,4 +19,11 @@ func (s set[T]) ToSlice() []T {
 		slc = append(slc, k)
 	}
 	return slc
+}
+
+// Sort returns set with elements sorted in ascending order
+func Sort[E cmp.Ordered](set set[E]) []E {
+	s := set.ToSlice()
+	slices.Sort(s)
+	return s
 }

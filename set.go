@@ -51,11 +51,28 @@ func (s set[T]) Remove(item T) {
 	delete(s, item)
 }
 
-// Contains reports whether item is present in the set.
-func (s set[T]) Contains(item T) bool {
-	_, exists := s[item]
-	return exists
+// Contains reports whether all given items are present in the set
+func (s set[T]) Contains(items ...T) bool {
+	for _, v := range items {
+		_, exists := s[v]
+		if !exists {
+			return false
+		}
+	}
+	return true
 }
+
+// ContainsAny reports whether at least one of the given items is present in the set
+func (s set[T]) ContainsAny(items ...T) bool {
+	for _, v := range items {
+		_, exists := s[v]
+		if exists != false {
+			return true
+		}
+	}
+	return false
+}
+
 
 // Size returns the number of elements in the set.
 func (s set[T]) Size() int {

@@ -168,3 +168,8 @@ func (s set[T]) SymmetricDiffUpdate(rhs set[T]) {
 		}
 	}
 }
+
+// Clear removes all elements from the set.
+func (s set[T]) Clear() {
+	clear(s)
+}

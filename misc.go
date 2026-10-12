@@ -2,6 +2,7 @@ package set
 
 import (
 	"cmp"
+	"maps"
 	"slices"
 )
 
@@ -26,4 +27,8 @@ func Sort[E cmp.Ordered](set set[E]) []E {
 	s := set.ToSlice()
 	slices.Sort(s)
 	return s
+}
+
+func Clone[T comparable](s set[T]) set[T] {
+	return maps.Clone(s)
 }
